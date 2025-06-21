@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    
+    <form action="/sing_up" method="POST">
+        <!-- Campo de Email -->
+        <label for="email">Email:</label>
+        <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="seu@email.com" 
+            required
+        >
+        <br><br>
+
+        <!-- Campo de Senha -->
+        <label for="senha">Senha:</label>
+        <input 
+            type="password" 
+            id="senha" 
+            name="senha" 
+            placeholder="Digite sua senha" 
+            required
+            minlength="6" maxlength="20"
+        >
+        <small>Senha deve ter no mínimo 6 caractees.</small>
+        <br><br>
+        <button type="submit">Entrar</button>
+    </form>
+</body>
+</html>
