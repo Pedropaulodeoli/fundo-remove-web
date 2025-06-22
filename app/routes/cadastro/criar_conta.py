@@ -10,29 +10,48 @@ email_confirm_route= Blueprint('email_confirm', __name__)
 
 @sing_up_route.route('/sing_up', methods =['GET', 'POST'])
 def sing_up():
-    
-    # gera codigo de verificação
-    codigo_verificacao = random.randint(1000, 9999)
 
-    if request.method == 'POST':
-        email = request.form['email']
-        senha = request.form['senha']
-        if len(senha) < 6:
-            return "Senha muito curta. No mínimo 6 caracteres."
-        else:
-            senha_hash = generate_password_hash(senha)
+    try:
 
-        session['codigo_verificacao'] = codigo_verificacao
-        session['email'] = email
-        session['senha_hash'] = senha_hash
+        conn = conectar()
+        cur = conn.cursor()
 
-        # ===== Enviando E-mail de verificação ===== #
-        EnviarEmail.enviar_email(email, "codigo de verificaçãp", "seu codigo de verificação e: {0}".format(codigo_verificacao))
+        # gera codigo de verificação
+        codigo_verificacao = random.randint(1000, 9999)
 
-        return render_template('account/confirm_email.html')
+        if request.method == 'POST':
+            email = request.form['email']
+            senha = request.form['senha']
+            if len(senha) < 6:
+                return "Senha muito curta. No mínimo 6 caracteres."
+            else:
+                senha_hash = generate_password_hash(senha)
+
+            session['codigo_verificacao'] = codigo_verificacao
+            session['email'] = email
+            session['senha_hash'] = senha_hash
+
+            cur.execute("SELECT email FROM contas WHERE email = %s;", (email,))
+            if cur.fetchone:
+                return "Erro email ja cadastrado, tente novamente ou faca login"
+
+            # ===== Enviando E-mail de verificação ===== #
+            EnviarEmail.enviar_email(email, "codigo de verificaçãp", "seu codigo de verificação e: {0}".format(codigo_verificacao))
+
+            return render_template('account/confirm_email.html')
         
-    return render_template('account/sing_up.html')
-
+        return render_template('account/sing_up.html')
+    
+    except Exception as e:
+        print(f"Erro: {e}")
+        return "Erro durante a verificação"
+    
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        
+        if 'conn' in locals():
+            conn.close
 
 @email_confirm_route.route("/email_confirm", methods =['GET','POST'])
 def email_confirm():
@@ -57,15 +76,17 @@ def email_confirm():
                 return redirect('/')
             else:
                 return "Codigo de verificacao incorreto, por favor, tente novamente"
+            
     except Exception as e:
         print(f"Erro: {e}")
         return("Ocorreu um erro durante a verificação")
+    
     finally:
         if 'cur' in locals():
             cur.close()
         
         if 'conn' in locals():
-            conn.close
+            conn.close()
 
     
 
