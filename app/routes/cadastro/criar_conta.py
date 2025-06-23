@@ -1,6 +1,5 @@
 import EnviarEmail
 import random
-import psycopg2
 from flask import Blueprint, render_template, request, session, redirect
 from werkzeug.security import generate_password_hash
 from conexao import conectar
@@ -23,7 +22,9 @@ def sing_up():
             email = request.form['email']
             senha = request.form['senha']
             if len(senha) < 6:
-                return "Senha muito curta. No mínimo 6 caracteres."
+                return render_template('sing_up.html', erro_lenMIN = 'Senha muito curta. No mínimo 6 caracteres.')
+            elif len(senha) > 20:
+                return render_template('sing_up.html', erro_lenMAX = 'senha muito longa, tamanho maximo: 20 caracteres')
             else:
                 senha_hash = generate_password_hash(senha)
 
@@ -32,8 +33,8 @@ def sing_up():
             session['senha_hash'] = senha_hash
 
             cur.execute("SELECT email FROM contas WHERE email = %s;", (email,))
-            if cur.fetchone:
-                return "Erro email ja cadastrado, tente novamente ou faca login"
+            if cur.fetchone():
+                return render_template("account/sing_up.html", erro="O email usado ja esta cadastrado, use outro ou tente novamente")
 
             # ===== Enviando E-mail de verificação ===== #
             EnviarEmail.enviar_email(email, "codigo de verificaçãp", "seu codigo de verificação e: {0}".format(codigo_verificacao))
@@ -75,7 +76,7 @@ def email_confirm():
                 conn.commit()
                 return redirect('/')
             else:
-                return "Codigo de verificacao incorreto, por favor, tente novamente"
+                return render_template("account/confirm_email.html", erro= "Codigo de verificação incorreto, tente novamente")
             
     except Exception as e:
         print(f"Erro: {e}")

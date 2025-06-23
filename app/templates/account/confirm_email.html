@@ -20,6 +20,9 @@
             <br><br>
             <button type="submit">Confirmar</button>
         </form>
+        {% if erro %}
+            <p style="color: red;"> {{ erro }}</p>
+        {% endif %}
     </header>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>sing_up</title>
 </head>
 <body>
-    <h1>Login</h1>
+    <h1>sing_up</h1>
     
     <form action="/sing_up" method="POST">
         <!-- Campo de Email -->
@@ -30,7 +30,18 @@
         >
         <small>Senha deve ter no mínimo 6 caractees.</small>
         <br><br>
-        <button type="submit">Entrar</button>
+        <button type="submit">Criar</button>
     </form>
+
+    {% if erro %}
+            <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+    {% if erro_lenMAX %}
+            <p style="color: red;">{{ erro_lenMAX }}</p>
+    {% endif %}
+    {% if erro_lenMIN %}
+            <p style="color: red;">{{ erro_lenMIN }}</p>
+    {% endif %}
+
 </body>
 </html>
