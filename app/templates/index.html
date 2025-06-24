@@ -8,7 +8,8 @@
 <body>
     <header>
         <h1>Fundo Rmover</h1>
-
+        
+        {% if not email %}
         <form action="/login" method="GET">
             <button type="submit">Fazer login</button>
         </form>
@@ -16,6 +17,10 @@
         <form action="/sing_up" method="GET">
             <button type="submit">Cadastrar-se</button>
         </form>
+        {% else %}
+        <h2>Seja bem vindo {{ email }}</h2>
+        {% endif %}
+
     </header>
 
     <h1>Remover Fundo de imagem</h1>

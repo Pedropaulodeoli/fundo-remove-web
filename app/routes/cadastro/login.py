@@ -12,17 +12,40 @@ def login():
         cur = conn.cursor()
 
         if request.method == 'POST':
+            
             email_login = request.form['email_login']
             senha_login = request.form['senha_login']
 
-            cur.execute('SELECT senha FROM contas WHERE email = %s;', (email_login,))
-            senha_bd = cur.fetchone()
+            cur.execute('SELECT email FROM contas WHERE email = %s;', (email_login,))
+            if cur.fetchone():
 
-            if senha_bd and check_password_hash(senha_bd[0], senha_login):
-                session['usuario'] = email_login
-                return redirect('/')
+                session['email'] = email_login
+
+                cur.execute('SELECT senha FROM contas WHERE email = %s;', (email_login,))
+                senha_bd = cur.fetchone()
+
+                cur.execute('SELECT tipo FROM contas WHERE email = %s;', (email_login,) )
+                tipo_user = cur.fetchone()
+                cur.execute('SELECT id FROM contas WHERE email = %s;', (email_login,))
+                id_user = cur.fetchone()
+
+                if tipo_user:
+                    session['user_tipo'] = tipo_user
+                else:
+                    return 'Erro na busca do tipo de usuário'
+                
+                if id_user:
+                    session['user_id'] = id_user
+                else:
+                    return 'Erro na busca do id do usuário'
+
+                if senha_bd and check_password_hash(senha_bd[0], senha_login):
+                    session['usuario'] = email_login
+                    return redirect('/')
+                else:
+                    return "Email ou senha incorretos"
             else:
-                return "Email ou senha incorretos"
+                return render_template('login.html', erro_email = 'O email digitado nao existe, ou está errado')
 
     except Exception as e:
         print("Erro durante a verificação:")
