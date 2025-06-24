@@ -1,3 +1,4 @@
+## Desenvolvimento pausado
 # Site Fundo-Remover
 
 Este projeto é um site para remoção de fundo de imagens automaticamente. O sistema permite cadastro de usuários, verificação de e-mail, login, upload de imagens e download da imagem processada. Além disso, utiliza banco de dados PostgreSQL para gerenciamento de contas, imagens, pagamentos e planos.
